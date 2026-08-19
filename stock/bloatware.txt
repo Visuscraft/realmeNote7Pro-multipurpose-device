@@ -1,0 +1,98 @@
+# Packages disabled by deploy/debloat.sh.
+#
+# Format: one package name per line, "#" starts a comment.
+# Nothing here is uninstalled: packages are disabled for the current user
+# (pm disable-user) so "deploy/debloat.sh --restore" can bring them back and a
+# factory reset always restores the stock state.
+#
+# Only entries that exist on the device are touched, so it is safe to keep
+# packages of other ColorOS/realme UI versions in this list.
+#
+# Anything system critical (phone, telephony, SIM, media, ColorOS launcher,
+# system UI, settings, package installer, permission controller, Play services)
+# is deliberately NOT listed - disabling those bricks the device.
+
+# --- realme / ColorOS pre-installed apps -------------------------------------
+com.coloros.gamespace
+com.coloros.gamespaceui
+com.coloros.video
+com.coloros.musiclink
+com.coloros.compass2
+com.coloros.calculator
+com.coloros.soundrecorder
+com.coloros.weather.service
+com.coloros.weather2
+com.coloros.assistantscreen
+com.coloros.healthcheck
+com.coloros.activation
+com.coloros.oshare
+com.coloros.childrenspace
+com.coloros.securitykeyboard
+com.coloros.floatassistant
+com.coloros.smartdrive
+com.oplus.games
+com.oplus.melody
+com.oppo.quicksearchbox
+com.oppo.usercenter
+com.oppo.community
+com.heytap.cloud
+com.heytap.market
+com.heytap.browser
+com.heytap.music
+com.heytap.reader
+com.heytap.themestore
+com.heytap.pictorial
+com.heytap.speechassist
+com.heytap.health
+com.heytap.quicksearchbox
+com.nearme.gamecenter
+com.nearme.themespace
+com.nearme.instant.platform
+com.nearme.romupdate
+com.redteamobile.roaming
+
+# --- Vendor advertising, analytics and telemetry -----------------------------
+com.coloros.push
+com.heytap.mcs
+com.oplus.statistics.rom
+com.oppo.logkit
+com.oplus.logkit
+com.android.statementservice
+
+# --- Google apps that are not needed on a headless device --------------------
+com.google.android.apps.tachyon
+com.google.android.apps.docs
+com.google.android.apps.photos
+com.google.android.apps.magazines
+com.google.android.videos
+com.google.android.youtube
+com.google.android.music
+com.google.android.talk
+com.google.ar.core
+
+# --- Third party pre-loads ---------------------------------------------------
+com.facebook.appmanager
+com.facebook.services
+com.facebook.system
+com.facebook.katana
+com.netflix.partner.activation
+com.netflix.mediaclient
+com.amazon.appmanager
+com.linkedin.android
+com.snapchat.android
+com.instagram.android
+com.dailyhunt.news
+com.josh.app
+com.moboapplab.calculator
+
+# --- Bulky stock apps replaced by the device runtime -------------------------
+com.android.wallpaper.livepicker
+com.android.wallpapercropper
+com.android.dreams.basic
+com.android.dreams.phototable
+com.android.bookmarkprovider
+com.android.printspooler
+com.android.bips
+com.android.egg
+com.android.traceur
+com.android.wallpaperbackup
