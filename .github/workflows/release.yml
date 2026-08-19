@@ -1,0 +1,93 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'latest.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Package release payload
+        id: package
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          tar -czf dist/release.tar.gz \
+            device \
+            modes \
+            stock \
+            dashboards \
+            deploy \
+            README.md \
+            LICENSE
+          echo "sha256=$(sha256sum dist/release.tar.gz | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "size=$(stat -c%s dist/release.tar.gz)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: dist/release.tar.gz
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: auto-${{ github.run_number }}
+          name: auto-${{ github.run_number }}
+          files: dist/release.tar.gz
+          generate_release_notes: true
+
+      - name: Generate latest.json
+        env:
+          VERSION: auto-${{ github.run_number }}
+          SHA256: ${{ steps.package.outputs.sha256 }}
+          SIZE: ${{ steps.package.outputs.size }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          published_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          url="${{ github.server_url }}/${{ github.repository }}/releases/download/${VERSION}/release.tar.gz"
+          cat > latest.json <<EOF
+          {
+            "version": "${VERSION}",
+            "tag": "${VERSION}",
+            "run_number": ${{ github.run_number }},
+            "commit": "${COMMIT}",
+            "published_at": "${published_at}",
+            "url": "${url}",
+            "sha256": "${SHA256}",
+            "size": ${SIZE}
+          }
+          EOF
+          python3 -c "import json,sys; json.load(open('latest.json'))"
+          cat latest.json
+
+      - name: Commit latest.json
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain latest.json)" ]; then
+            echo "latest.json unchanged, nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add latest.json
+          git commit -m "chore: publish auto-${{ github.run_number }} [skip ci]"
+          git push origin HEAD:main

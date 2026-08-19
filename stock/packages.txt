@@ -1,0 +1,9 @@
+# Termux packages required by the multipurpose device runtime.
+# Installed non-interactively by deploy/install.sh.
+curl
+tar
+jq
+coreutils
+termux-api
+python
+openssl-tool
