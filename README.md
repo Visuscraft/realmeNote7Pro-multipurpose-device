@@ -162,7 +162,7 @@ tail -f ~/.realme-device/logs/updater.log
 | `deploy/` | Installer, updater, debloater, and Termux:Boot hook. |
 | `device/` | Device runtime, status collector, and shared code. |
 | `modes/` | Device modes: `idle`, `monitor`, and `server`. |
-| `stock/` | Default settings, package list, and debloat lists. |
+| `stock/` | Stock/default configuration: default settings, package list, and debloat lists. This is not stock-market data. |
 | `dashboards/` | Local status dashboard and its web server. |
 | `latest.json` | Update information checked by installed devices. |
 
@@ -192,6 +192,148 @@ The dashboard is served by the `server` mode at
 <http://127.0.0.1:8080/>. Set `DEVICE_DASHBOARD_BIND=0.0.0.0` in
 `~/.realme-device/config.env` to expose it on the local network.
 
+## Using the device
+
+### Find the phone's Wi-Fi IP address
+
+The dashboard and optional SSH access are reached over your local Wi-Fi
+network. To open them from another computer, first find the phone's Wi-Fi IP
+address.
+
+**In Termux, run:**
+
+```sh
+ip addr show wlan0 | grep 'inet '
+```
+
+Look for an address that usually looks like `192.168.x.y`. If that command does
+not print anything, try the older network tool instead:
+
+**In Termux, run:**
+
+```sh
+ifconfig wlan0
+```
+
+The phone and the computer you use to connect to it must be on the same Wi-Fi
+network. The phone's IP address can change after Wi-Fi reconnects unless you set
+a static or reserved address for the phone in your router.
+
+### Open the dashboard from another device
+
+By default, the dashboard only listens on the phone itself at
+<http://127.0.0.1:8080/>. To open it from a computer on the same Wi-Fi network,
+change the dashboard bind address, then start the `server` mode.
+
+**In Termux, run:**
+
+```sh
+printf '\nDEVICE_DASHBOARD_BIND=0.0.0.0\n' >> ~/.realme-device/config.env
+```
+
+**In Termux, run:**
+
+```sh
+~/.realme-device/current/device/device.sh start server
+```
+
+On your computer, open `http://<phone-ip>:8080/` in a browser, replacing
+`<phone-ip>` with the Wi-Fi IP address you found above.
+
+Binding to `0.0.0.0` exposes the status page without a password to everyone on
+that Wi-Fi network. Only do this on a network you trust.
+
+### SSH into the phone (optional)
+
+This project does not install or configure an SSH server. The `server` mode is
+only the dashboard web server. If you want SSH access, install and start
+Termux's OpenSSH server yourself.
+
+**In Termux, run:**
+
+```sh
+pkg install -y openssh
+```
+
+**In Termux, run:**
+
+```sh
+passwd
+```
+
+**In Termux, run:**
+
+```sh
+sshd
+```
+
+Termux's `sshd` listens on port `8022`, not port `22`. Find your Termux
+username before connecting:
+
+**In Termux, run:**
+
+```sh
+whoami
+```
+
+On your computer, run this command, replacing `<username>` and `<phone-ip>` with
+your Termux username and the phone's Wi-Fi IP address:
+
+```sh
+ssh -p 8022 <username>@<phone-ip>
+```
+
+After a phone reboot, start `sshd` again unless you add your own Termux:Boot hook
+for it. For better security than a password, put your computer's public SSH key
+in `~/.ssh/authorized_keys` in Termux and use key-based login.
+
+### View what monitor mode records
+
+`monitor` mode records device telemetry samples. It does not record audio,
+video, or the screen. The samples are appended to
+`~/.realme-device/state/samples.csv` with these columns:
+`timestamp,battery_percentage,free_bytes,online`.
+
+The default sample interval is 60 seconds. You can change it by setting
+`DEVICE_MONITOR_INTERVAL` in `~/.realme-device/config.env`. The current
+dashboard reads `status.json`, not this CSV file.
+
+**In Termux, run:**
+
+```sh
+~/.realme-device/current/device/device.sh start monitor
+```
+
+**In Termux, run:**
+
+```sh
+tail -n 20 ~/.realme-device/state/samples.csv
+```
+
+### Understand and extend the dashboard
+
+The dashboard reads `status.json`. That file is written by `device/status.sh`.
+The visible dashboard cards are hardcoded in the `CARDS` array near the top of
+`dashboards/app.js`.
+
+To add a new dashboard item:
+
+1. Edit `device/status.sh` so it writes the new field into `status.json`.
+2. Edit `dashboards/app.js` and add a matching entry to the `CARDS` array.
+3. Start the dashboard again.
+
+**In Termux, run:**
+
+```sh
+~/.realme-device/current/device/device.sh start server
+```
+
+For example, if `device/status.sh` writes a new JSON field named
+`battery_temperature_celsius`, add this card in `dashboards/app.js`:
+`{ key: 'battery_temperature_celsius', label: 'battery temp', suffix: '°C' },`.
+For byte values, use the existing byte formatter instead, for example
+`{ key: 'cache_free_bytes', label: 'cache free', format: formatBytes },`.
+
 ## Configuration
 
 `stock/config.env` holds the defaults. Advanced users can override them in
@@ -204,6 +346,7 @@ The dashboard is served by the `server` mode at
 | `DEVICE_HOME` | `~/.realme-device` | Installation folder. |
 | `DEVICE_UPDATE_INTERVAL` | `300` | Seconds between update checks. |
 | `DEVICE_MODE` | `idle` | Mode started after boot. |
+| `DEVICE_MONITOR_INTERVAL` | `60` | Seconds between monitor telemetry samples. |
 | `DEVICE_DASHBOARD_PORT` | `8080` | Dashboard port. |
 | `DEVICE_KEEP_RELEASES` | `3` | Releases kept for rollback. |
 | `DEVICE_DEBLOAT_BACKEND` | auto | `root`, `adb`, or `direct` backend for `deploy/debloat.sh`. |
