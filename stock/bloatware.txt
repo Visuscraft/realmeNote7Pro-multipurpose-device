@@ -57,24 +57,12 @@ com.heytap.mcs
 com.oplus.statistics.rom
 com.oppo.logkit
 com.oplus.logkit
-com.android.statementservice
 
 # --- Google apps that are not needed on a headless device --------------------
-com.google.android.apps.tachyon
-com.google.android.apps.docs
-com.google.android.apps.photos
 com.google.android.apps.magazines
-com.google.android.videos
-com.google.android.youtube
-com.google.android.music
 com.google.android.talk
-com.google.ar.core
 
 # --- Third party pre-loads ---------------------------------------------------
-com.facebook.appmanager
-com.facebook.services
-com.facebook.system
-com.facebook.katana
 com.netflix.partner.activation
 com.netflix.mediaclient
 com.amazon.appmanager
@@ -86,13 +74,3 @@ com.josh.app
 com.moboapplab.calculator
 
 # --- Bulky stock apps replaced by the device runtime -------------------------
-com.android.wallpaper.livepicker
-com.android.wallpapercropper
-com.android.dreams.basic
-com.android.dreams.phototable
-com.android.bookmarkprovider
-com.android.printspooler
-com.android.bips
-com.android.egg
-com.android.traceur
-com.android.wallpaperbackup
