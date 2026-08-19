@@ -1,10 +1,10 @@
 {
-  "version": "auto-2",
-  "tag": "auto-2",
-  "run_number": 2,
-  "commit": "b87b9262244d13cb58a7ffce1762b4c0f9da8533",
-  "published_at": "2026-08-19T20:30:27Z",
-  "url": "https://github.com/Visuscraft/realmeNote7Pro-multipurpose-device/releases/download/auto-2/release.tar.gz",
-  "sha256": "78f5aa80b0a50c9f0e476da19166cb0f55b12aaeddab659b8eebf334c88be4f1",
-  "size": 18530
+  "version": "auto-3",
+  "tag": "auto-3",
+  "run_number": 3,
+  "commit": "182de2591917265e9de5855e656cff31d8e0635c",
+  "published_at": "2026-08-19T22:10:20Z",
+  "url": "https://github.com/Visuscraft/realmeNote7Pro-multipurpose-device/releases/download/auto-3/release.tar.gz",
+  "sha256": "32390a3fada86c14058f4767df768475e09bc6f9802577d66f19a4f0022c4b00",
+  "size": 19828
 }
